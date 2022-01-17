@@ -1,70 +1,24 @@
 const express = require("express");
-const {
-  listContacts,
-  getContactById,
-  removeContact,
-  addContact,
-  updateContact,
-} = require("../../model");
 const router = express.Router();
 
-router.get("/", async (_, res, next) => {
-  try {
-    const contacts = await listContacts();
-    res.json(contacts);
-  } catch (error) {
-    next(error);
-  }
-});
+const { contactValidation } = require("../../middlewares/validation/contacts");
 
-router.get("/:contactId", async (req, res, next) => {
-  try {
-    const { contactId } = req.params;
-    const contact = await getContactById(contactId);
-    if (!contact) {
-      return res.status(404).json({ message: "Not found" });
-    }
-    res.json(contact);
-  } catch (error) {
-    next(error);
-  }
-});
+const {
+  getContacts,
+  getContactById,
+  addContact,
+  deleteContact,
+  updateContact,
+} = require("../../controllers/contacts");
 
-router.post("/", async (req, res, next) => {
-  try {
-    const { body } = req;
-    const newContact = await addContact(body);
-    res.status(201).json(newContact);
-  } catch (error) {
-    next(error);
-  }
-});
+router.get("/", getContacts);
 
-router.delete("/:contactId", async (req, res, next) => {
-  try {
-    const { contactId } = req.params;
-    const { removed } = await removeContact(contactId);
-    if (!removed) {
-      return res.status(404).json({ message: "Not found" });
-    }
-    res.json({ message: "Contact deleted" });
-  } catch (error) {
-    next(error);
-  }
-});
+router.get("/:contactId", getContactById);
 
-router.put("/:contactId", async (req, res, next) => {
-  try {
-    const { contactId } = req.params;
-    const { body } = req;
-    const updatedContact = await updateContact(contactId, body);
-    if (!updatedContact) {
-      return res.status(404).json({ message: "Not found" });
-    }
-    res.json(updatedContact);
-  } catch (error) {
-    next(error);
-  }
-});
+router.post("/", contactValidation, addContact);
+
+router.delete("/:contactId", deleteContact);
+
+router.put("/:contactId", contactValidation, updateContact);
 
 module.exports = router;
