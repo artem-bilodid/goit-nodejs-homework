@@ -15,6 +15,20 @@ const contactsValidation = {
 
     next();
   },
+  getContactByIdValidation: (req, res, next) => {
+    const { contactId } = req.params;
+
+    const schema = Joi.string()
+      .min(24)
+      .max(24)
+      .required()
+      .pattern(/^(?=[a-f\d]{24}$)(\d+[a-f]|[a-f]+\d)/i);
+    const validationResult = schema.validate(contactId);
+    if (validationResult.error) {
+      return res.status(400).json({ message: validationResult.error.details });
+    }
+    next();
+  },
 };
 
 module.exports = contactsValidation;
