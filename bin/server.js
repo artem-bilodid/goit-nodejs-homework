@@ -1,7 +1,19 @@
-const app = require('../app')
+const app = require('../app');
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+dotenv.config();
 
-const PORT = process.env.PORT || 3000
+const { PORT = 3000, DB_HOST } = process.env;
 
-app.listen(PORT, () => {
-  console.log(`Server running. Use our API on port: ${PORT}`)
-})
+mongoose
+  .connect(DB_HOST)
+  .then(() => {
+    console.log(`Connection to MongoDB established successfully`);
+    app.listen(PORT, () => {
+      console.log(`Server running. Use our API on port: ${PORT}`);
+    });
+  })
+  .catch(error => {
+    console.log(error);
+    process.exit(1);
+  });
