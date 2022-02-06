@@ -2,15 +2,9 @@ const { Contact } = require('../../models');
 
 const updateContact = async (req, res, next) => {
   try {
-    const { contactId } = req.params;
     const { body } = req;
-    const updatedContact = await Contact.findByIdAndUpdate(contactId, body, { new: true });
-
-    console.log(updatedContact);
-
-    if (!updatedContact) {
-      return res.status(404).json({ message: 'Not found' });
-    }
+    const { contactId } = req.params;
+    const updatedContact = await Contact.findByIdAndUpdate(contactId, { body }, { new: true });
 
     res.json(updatedContact);
   } catch (error) {

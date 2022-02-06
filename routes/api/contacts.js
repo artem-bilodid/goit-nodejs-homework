@@ -6,6 +6,7 @@ const {
   updateContactValidation,
   contactIdParamValidation,
   contactFavoriteValidation,
+  ownerUserValidation,
 } = require('../../middlewares/validation/contacts');
 
 const {
@@ -17,21 +18,27 @@ const {
   updateContactFavoriteById,
 } = require('../../controllers/contacts');
 
-router.get('/', getContacts);
+const { auth } = require('../../middlewares/auth');
 
-router.get('/:contactId', contactIdParamValidation, getContactById);
+router.get('/', auth, getContacts);
 
-router.post('/', createContactValidation, addContact);
+router.get('/:contactId', [auth, contactIdParamValidation, ownerUserValidation], getContactById);
 
-router.delete('/:contactId', contactIdParamValidation, deleteContact);
+router.post('/', [auth, createContactValidation, ownerUserValidation], addContact);
 
-router.put('/:contactId', [contactIdParamValidation, updateContactValidation], updateContact);
+router.delete('/:contactId', [auth, contactIdParamValidation, ownerUserValidation], deleteContact);
 
-router.delete('/:contactId', contactIdParamValidation, deleteContact);
+router.put(
+  '/:contactId',
+  [auth, contactIdParamValidation, updateContactValidation, ownerUserValidation],
+  updateContact,
+);
+
+router.delete('/:contactId', [auth, contactIdParamValidation, ownerUserValidation], deleteContact);
 
 router.patch(
   '/:contactId/favorite',
-  [contactIdParamValidation, contactFavoriteValidation],
+  [auth, contactIdParamValidation, contactFavoriteValidation, ownerUserValidation],
   updateContactFavoriteById,
 );
 

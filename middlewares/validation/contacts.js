@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const { Contact } = require('../../models');
 
 const contactBaseValidation = {
   name: Joi.string().min(3).max(30).required(),
@@ -51,6 +52,22 @@ const contactsValidation = {
     if (validationResult.error) {
       return res.status(400).json({ message: validationResult.error.details });
     }
+    next();
+  },
+  ownerUserValidation: async (req, res, next) => {
+    const { contactId } = req.params;
+    const { _id: userId } = req.user;
+
+    const contactToUpdate = await Contact.findById(contactId);
+
+    if (!contactToUpdate) {
+      return res.status(404).json({ message: 'Not found' });
+    }
+
+    if (contactToUpdate.owner?.toString() !== userId) {
+      return res.status(403).json({ message: 'Not allowed' });
+    }
+
     next();
   },
 };
