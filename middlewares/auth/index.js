@@ -24,8 +24,8 @@ const auth = async (req, res, next) => {
         message: 'Not authorized',
       });
     }
-    const { email, subscription } = currentUser;
-    req.user = { _id, email, subscription };
+    const { email, subscription, avatarURL } = currentUser;
+    req.user = { _id, email, subscription, avatarURL };
 
     next();
   } catch (error) {
