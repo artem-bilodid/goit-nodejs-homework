@@ -1,5 +1,7 @@
 const gravatar = require('gravatar');
+const { v4 } = require('uuid');
 const { User } = require('../../models');
+const { sendUserConfiramtion } = require('../../notifications/email');
 
 const addUser = async (req, res, next) => {
   try {
@@ -12,9 +14,12 @@ const addUser = async (req, res, next) => {
     }
 
     const avatarURL = gravatar.url(email);
-    const newUser = new User({ email, avatarURL });
+    const verificationToken = v4();
+
+    const newUser = new User({ email, avatarURL, verificationToken });
     newUser.setPassword(password);
     const { subscription } = await newUser.save();
+    await sendUserConfiramtion(email, verificationToken);
 
     return res.status(201).json({ user: { email, subscription, avatarURL } });
   } catch (error) {

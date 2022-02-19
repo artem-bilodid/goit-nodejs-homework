@@ -13,7 +13,15 @@ const login = async (req, res, next) => {
         message: 'Email or password is wrong',
       });
     }
-    const { _id, subscription } = existingUser;
+
+    const { _id, subscription, verify } = existingUser;
+
+    if (!verify) {
+      return res.status(403).json({
+        message: 'Email was not verified',
+      });
+    }
+
     const token = jwt.sign({ _id, email, subscription }, JWT_KEY);
 
     await User.findByIdAndUpdate(_id, { token });
