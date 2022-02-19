@@ -8,6 +8,8 @@ const {
   getCurrentUser,
   updateUser,
   updateUserAvatar,
+  verifyUser,
+  generateUserVerificationToken,
 } = require('../../controllers/users');
 const { auth } = require('../../middlewares/auth');
 const { upload } = require('../../middlewares/upload');
@@ -16,6 +18,8 @@ const {
   emailAndPasswordValidation,
   updateSubscriptionValidation,
   userIdParamValidation,
+  verificationTokenParamValidation,
+  emailValidation,
 } = require('../../middlewares/validation/users');
 
 router.post('/', emailAndPasswordValidation, addUser);
@@ -24,5 +28,7 @@ router.patch('/:userId', [userIdParamValidation, auth, updateSubscriptionValidat
 router.post('/login', emailAndPasswordValidation, login);
 router.get('/logout', auth, logout);
 router.get('/current', auth, getCurrentUser);
+router.get('/verify/:verificationToken', verificationTokenParamValidation, verifyUser);
+router.post('/verify', emailValidation, generateUserVerificationToken);
 
 module.exports = router;
